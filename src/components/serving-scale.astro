@@ -1,0 +1,95 @@
+---
+interface Props {
+	baseServings: number;
+}
+
+const { baseServings } = Astro.props;
+---
+
+<div class="flex flex-wrap items-center gap-3" data-serving-scale-controls>
+	<label class="text-sm font-semibold" for="desired-servings">
+		Portions
+	</label>
+	<div class="flex items-center gap-1.5">
+		<button
+			type="button"
+			class="flex h-8 w-8 items-center justify-center rounded-full border border-border text-lg font-bold leading-none transition hover:bg-accent hover:text-accent-fg"
+			data-role="decrement"
+			aria-label="Réduire les portions"
+		>
+			−
+		</button>
+		<input
+			class="w-12 rounded-lg border border-border px-1 py-1.5 text-center text-base font-semibold tabular-nums"
+			type="number"
+			id="desired-servings"
+			name="desiredServings"
+			min="1"
+			step="1"
+			value={baseServings}
+		/>
+		<button
+			type="button"
+			class="flex h-8 w-8 items-center justify-center rounded-full border border-border text-lg font-bold leading-none transition hover:bg-accent hover:text-accent-fg"
+			data-role="increment"
+			aria-label="Augmenter les portions"
+		>
+			+
+		</button>
+	</div>
+	<span class="text-sm text-muted" id="scale-hint" aria-live="polite">
+		(base : {baseServings})
+	</span>
+</div>
+
+<script define:vars={{ baseServings }}>
+	const nf = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 2 });
+
+	function initServingScale() {
+		const input = document.getElementById('desired-servings');
+		const hint = document.getElementById('scale-hint');
+		const controls = document.querySelector('[data-serving-scale-controls]');
+		const decBtn = controls?.querySelector('[data-role="decrement"]');
+		const incBtn = controls?.querySelector('[data-role="increment"]');
+		const root = document.querySelector('[data-serving-scale]');
+
+		function getDesired() {
+			const raw = Number(input?.value);
+			return Number.isFinite(raw) && raw >= 1 ? Math.floor(raw) : baseServings;
+		}
+
+		function apply() {
+			const desired = getDesired();
+			if (input && String(desired) !== input.value) input.value = String(desired);
+			const factor = desired / baseServings;
+			root?.querySelectorAll('[data-role="qty"]').forEach((el) => {
+				if (!(el instanceof HTMLElement)) return;
+				const raw = el.dataset.baseQty ?? '';
+				if (raw === '') { el.textContent = '—'; return; }
+				const base = Number(raw);
+				if (Number.isNaN(base)) { el.textContent = '—'; return; }
+				el.textContent = nf.format(base * factor);
+			});
+			if (hint) {
+				hint.textContent = `(${desired} / base : ${baseServings})`;
+			}
+		}
+
+		decBtn?.addEventListener('click', () => {
+			const d = getDesired();
+			if (d > 1 && input) { input.value = String(d - 1); apply(); }
+		});
+		incBtn?.addEventListener('click', () => {
+			const d = getDesired();
+			if (input) { input.value = String(d + 1); apply(); }
+		});
+		input?.addEventListener('input', apply);
+		input?.addEventListener('change', apply);
+	}
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', initServingScale, { once: true });
+	} else {
+		initServingScale();
+	}
+</script>

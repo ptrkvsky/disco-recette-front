@@ -1,11 +1,37 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
+import RecipeCard from '../components/recipe-card.astro';
+import { sanityClient } from '../lib/sanity-client';
+import { RECIPES_LIST_QUERY } from '../lib/groq/recipes';
+import type { RecipeListItem } from '../types/recipe';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const recipes = await sanityClient.fetch<RecipeListItem[]>(
+	RECIPES_LIST_QUERY,
+);
 ---
 
-<Layout>
-	<Welcome />
+<Layout title="Recettes">
+	<main class="mx-auto max-w-6xl px-4 pb-12">
+		<h1 class="mb-2 text-[clamp(1.75rem,4vw,2.25rem)] font-semibold leading-tight">
+			Recettes
+		</h1>
+		<p class="mb-8 max-w-xl leading-normal text-muted">
+			Des idées gourmandes issues de notre base de contenus Sanity.
+		</p>
+		{
+			recipes.length === 0 ? (
+				<p class="text-muted">Aucune recette publiée pour le moment.</p>
+			) : (
+				<ul class="m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(17rem,1fr))] gap-6 p-0">
+					{recipes.map((recipe) => (
+						<li class="m-0 flex min-w-0">
+							<div class="flex min-h-0 min-w-0 flex-1 flex-col">
+								<RecipeCard recipe={recipe} />
+							</div>
+						</li>
+					))}
+				</ul>
+			)
+		}
+	</main>
 </Layout>

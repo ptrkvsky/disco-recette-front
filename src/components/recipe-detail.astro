@@ -1,0 +1,37 @@
+---
+import type { RecipeDetail } from '../types/recipe';
+import HeroRecipe from './hero-recipe.astro';
+import AuthorCard from './author-card.astro';
+import RecipeIntro from './recipe-intro.astro';
+import RecipeBox from './recipe-box.astro';
+import TipsBox from './tips-box.astro';
+import NutritionGrid from './nutrition-grid.astro';
+
+interface Props {
+	recipe: RecipeDetail;
+}
+
+const { recipe } = Astro.props;
+---
+
+<main>
+	<article>
+		<HeroRecipe recipe={recipe} />
+
+		<div class="mx-auto max-w-3xl space-y-8 px-4 pb-16">
+			<AuthorCard />
+
+			<RecipeIntro introduction={recipe.introduction} />
+
+			<RecipeBox recipe={recipe} />
+
+			{recipe.tips ? (
+				<TipsBox tips={recipe.tips} />
+			) : null}
+
+			{recipe.nutrition ? (
+				<NutritionGrid nutrition={recipe.nutrition} />
+			) : null}
+		</div>
+	</article>
+</main>

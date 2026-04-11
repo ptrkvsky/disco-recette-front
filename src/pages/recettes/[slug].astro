@@ -1,0 +1,58 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import RecipeDetail from '../../components/recipe-detail.astro';
+import { sanityClient } from '../../lib/sanity-client';
+import {
+	RECIPE_BY_SLUG_QUERY,
+	RECIPE_SLUGS_QUERY,
+} from '../../lib/groq/recipes';
+import type { RecipeDetail as RecipeDetailType, RecipeSlugRow } from '../../types/recipe';
+import { urlForRecipeImage } from '../../lib/sanity-image';
+import { buildRecipeSchemaGraph } from '../../lib/recipe-schema';
+
+export async function getStaticPaths() {
+	const rows = await sanityClient.fetch<RecipeSlugRow[]>(RECIPE_SLUGS_QUERY);
+	return rows.map(({ slug }) => ({
+		params: { slug },
+	}));
+}
+
+const slug = Astro.params.slug;
+if (!slug) {
+	return new Response(null, { status: 404, statusText: 'Not Found' });
+}
+
+const recipe = await sanityClient.fetch<RecipeDetailType | null>(
+	RECIPE_BY_SLUG_QUERY,
+	{ slug },
+);
+
+if (!recipe) {
+	return new Response(null, { status: 404, statusText: 'Not Found' });
+}
+
+const pageTitle = `${recipe.title} | Recettes`;
+const pageDescription = recipe.excerpt ?? undefined;
+
+const canonical = new URL(`/recettes/${slug}`, Astro.site).href;
+const imageUrls = [
+	urlForRecipeImage(recipe.mainImage, { width: 1200, height: 800 }),
+	urlForRecipeImage(recipe.mainImage, { width: 800, height: 533 }),
+].filter((u): u is string => Boolean(u));
+
+const jsonLd = buildRecipeSchemaGraph({
+	recipe,
+	canonicalUrl: canonical,
+	imageUrls,
+	authorName: import.meta.env.PUBLIC_RECIPE_AUTHOR_NAME,
+});
+---
+
+<Layout
+	title={pageTitle}
+	description={pageDescription}
+	canonical={canonical}
+	jsonLd={jsonLd}
+>
+	<RecipeDetail recipe={recipe} />
+</Layout>

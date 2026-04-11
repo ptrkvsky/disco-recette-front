@@ -1,0 +1,62 @@
+---
+import MetaBar from './meta-bar.astro';
+import IngredientList from './ingredient-list.astro';
+import StepList from './step-list.astro';
+import ServingScale from './serving-scale.astro';
+import type { RecipeDetail } from '../types/recipe';
+
+interface Props {
+	recipe: RecipeDetail;
+}
+
+const { recipe } = Astro.props;
+const ingredients = recipe.ingredients?.filter(Boolean) ?? [];
+const steps = recipe.steps?.filter((s) => s?.instruction) ?? [];
+---
+
+<section
+	id="recette"
+	class="mx-auto max-w-3xl scroll-mt-4 rounded-2xl bg-recipe-bg px-5 py-7 shadow-sm md:px-10 md:py-10"
+	aria-labelledby="recipe-box-title"
+>
+	<header class="mb-6 border-b border-border/40 pb-6">
+		<div class="mb-4 flex flex-wrap items-start justify-between gap-3">
+			<h2 id="recipe-box-title" class="m-0 font-serif text-2xl font-bold md:text-3xl">
+				{recipe.title}
+			</h2>
+			<button
+				type="button"
+				class="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-muted transition hover:bg-white"
+				onclick="window.print()"
+				aria-label="Imprimer la recette"
+			>
+				<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+				Imprimer
+			</button>
+		</div>
+
+		<MetaBar
+			prepTimeMin={recipe.prepTimeMin}
+			cookTimeMin={recipe.cookTimeMin}
+			baseServings={recipe.baseServings}
+			difficulty={recipe.difficulty}
+		/>
+	</header>
+
+	{ingredients.length > 0 ? (
+		<div class="mb-8">
+			<div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+				<h3 class="m-0 text-xl font-semibold">Ingrédients</h3>
+				<ServingScale baseServings={recipe.baseServings} />
+			</div>
+			<IngredientList ingredients={ingredients} baseServings={recipe.baseServings} />
+		</div>
+	) : null}
+
+	{steps.length > 0 ? (
+		<div>
+			<h3 class="m-0 mb-4 text-xl font-semibold">Préparation</h3>
+			<StepList steps={steps} />
+		</div>
+	) : null}
+</section>

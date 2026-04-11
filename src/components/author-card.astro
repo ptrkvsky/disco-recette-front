@@ -1,0 +1,48 @@
+---
+interface Props {
+	name?: string;
+	avatarUrl?: string;
+	bio?: string;
+}
+
+const {
+	name = 'Marie Dupont',
+	avatarUrl,
+	bio = 'Passionnée de cuisine du quotidien, je partage mes recettes testées et approuvées pour régaler toute la famille sans prise de tête.',
+} = Astro.props;
+
+const initials = name
+	.split(' ')
+	.map((w) => w[0])
+	.join('')
+	.slice(0, 2)
+	.toUpperCase();
+---
+
+<div class="flex items-center gap-4 rounded-xl border border-border/50 bg-surface px-4 py-4 md:px-6">
+	{avatarUrl ? (
+		<img
+			class="h-12 w-12 shrink-0 rounded-full object-cover md:h-14 md:w-14"
+			src={avatarUrl}
+			alt={`Photo de ${name}`}
+			width="56"
+			height="56"
+			loading="lazy"
+			decoding="async"
+		/>
+	) : (
+		<div
+			class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-accent text-sm font-bold text-accent-fg md:h-14 md:w-14 md:text-base"
+			aria-hidden="true"
+		>
+			{initials}
+		</div>
+	)}
+	<div class="min-w-0">
+		<p class="m-0 text-xs font-medium uppercase tracking-wide text-muted">Recette par</p>
+		<p class="m-0 text-base font-semibold leading-snug">{name}</p>
+		{bio ? (
+			<p class="m-0 mt-0.5 text-sm leading-snug text-muted line-clamp-2">{bio}</p>
+		) : null}
+	</div>
+</div>

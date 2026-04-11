@@ -1,0 +1,62 @@
+---
+import type { RecipeIngredient } from '../types/recipe';
+
+interface Props {
+	ingredients: RecipeIngredient[];
+	baseServings: number;
+}
+
+const { ingredients, baseServings } = Astro.props;
+const qtyFmt = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 2 });
+---
+
+<div data-serving-scale>
+	<ul class="m-0 list-none space-y-2.5 p-0">
+		{ingredients.map((ing, i) => (
+			<li class="flex items-start gap-3">
+				<input
+					type="checkbox"
+					id={`ing-${i}`}
+					class="mt-1 h-[1.15rem] w-[1.15rem] shrink-0 cursor-pointer appearance-none rounded border-2 border-border bg-white transition checked:border-accent checked:bg-accent"
+					aria-label={`${ing.quantity ? qtyFmt.format(ing.quantity) : ''} ${ing.unit ?? ''} ${ing.name}`}
+				/>
+				<label for={`ing-${i}`} class="cursor-pointer leading-relaxed peer-checked:text-muted peer-checked:line-through">
+					{ing.quantity != null ? (
+						<span
+							class="font-semibold tabular-nums"
+							data-role="qty"
+							data-base-qty={String(ing.quantity)}
+						>
+							{qtyFmt.format(ing.quantity)}
+						</span>
+					) : null}
+					{ing.unit ? (
+						<span class="text-muted">{` ${ing.unit}`}</span>
+					) : null}
+					{' '}
+					<span>{ing.name}</span>
+					{ing.note ? (
+						<span class="text-sm italic text-muted">{` (${ing.note})`}</span>
+					) : null}
+					{ing.optional ? (
+						<span class="text-sm text-muted"> — optionnel</span>
+					) : null}
+				</label>
+			</li>
+		))}
+	</ul>
+</div>
+
+<style>
+	input[type='checkbox']:checked {
+		background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12.207 4.793a1 1 0 0 1 0 1.414l-5 5a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L6.5 9.086l4.293-4.293a1 1 0 0 1 1.414 0z'/%3E%3C/svg%3E");
+		background-size: 100% 100%;
+		background-position: center;
+		background-repeat: no-repeat;
+	}
+	input[type='checkbox']:checked + label {
+		text-decoration: line-through;
+		color: var(--color-muted);
+		opacity: 0.65;
+	}
+</style>
