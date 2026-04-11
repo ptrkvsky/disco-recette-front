@@ -4,9 +4,20 @@ interface Props {
 }
 
 const { baseServings } = Astro.props;
+
+const portionLabel = (n: number) =>
+	n === 1 ? '1 portion' : `${n} portions`;
+const initialPrintSummary = `Quantités pour ${portionLabel(baseServings)} (recette de base : ${portionLabel(baseServings)}).`;
 ---
 
-<div class="flex flex-wrap items-center gap-3" data-serving-scale-controls>
+<div class="flex w-full max-w-full flex-col items-end gap-2 print:w-full print:items-stretch">
+	<p
+		id="serving-print-summary"
+		class="m-0 hidden w-full text-sm leading-snug text-muted print:block print:text-xs"
+	>
+		{initialPrintSummary}
+	</p>
+	<div class="flex flex-wrap items-center gap-3 print:hidden" data-serving-scale-controls>
 	<label class="text-sm font-semibold" for="desired-servings">
 		Portions
 	</label>
@@ -40,6 +51,7 @@ const { baseServings } = Astro.props;
 	<span class="text-sm text-muted" id="scale-hint" aria-live="polite">
 		(base : {baseServings})
 	</span>
+	</div>
 </div>
 
 <script define:vars={{ baseServings }}>
@@ -48,6 +60,7 @@ const { baseServings } = Astro.props;
 	function initServingScale() {
 		const input = document.getElementById('desired-servings');
 		const hint = document.getElementById('scale-hint');
+		const printSummary = document.getElementById('serving-print-summary');
 		const controls = document.querySelector('[data-serving-scale-controls]');
 		const decBtn = controls?.querySelector('[data-role="decrement"]');
 		const incBtn = controls?.querySelector('[data-role="increment"]');
@@ -72,6 +85,11 @@ const { baseServings } = Astro.props;
 			});
 			if (hint) {
 				hint.textContent = `(${desired} / base : ${baseServings})`;
+			}
+			if (printSummary) {
+				const dLabel = desired === 1 ? '1 portion' : `${desired} portions`;
+				const bLabel = baseServings === 1 ? '1 portion' : `${baseServings} portions`;
+				printSummary.textContent = `Quantités pour ${dLabel} (recette de base : ${bLabel}).`;
 			}
 		}
 

@@ -11,7 +11,7 @@ const qtyFmt = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 2 });
 ---
 
 <div data-serving-scale>
-	<ul class="m-0 list-none space-y-2.5 p-0">
+	<ul class="m-0 list-none space-y-2.5 p-0 print:space-y-1">
 		{ingredients.map((ing, i) => (
 			<li class="flex items-start gap-3">
 				<input
@@ -20,7 +20,7 @@ const qtyFmt = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 2 });
 					class="mt-1 h-[1.15rem] w-[1.15rem] shrink-0 cursor-pointer appearance-none rounded border-2 border-border bg-white transition checked:border-accent checked:bg-accent"
 					aria-label={`${ing.quantity ? qtyFmt.format(ing.quantity) : ''} ${ing.unit ?? ''} ${ing.name}`}
 				/>
-				<label for={`ing-${i}`} class="cursor-pointer leading-relaxed peer-checked:text-muted peer-checked:line-through">
+				<label for={`ing-${i}`} class="cursor-pointer text-base leading-relaxed peer-checked:text-muted peer-checked:line-through print:text-sm print:leading-snug">
 					{ing.quantity != null ? (
 						<span
 							class="font-semibold tabular-nums"

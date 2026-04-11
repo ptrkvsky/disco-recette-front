@@ -27,5 +27,13 @@ const { title = 'Recettes', description, canonical, jsonLd } = Astro.props;
 	</head>
 	<body>
 		<slot />
+		{canonical ? (
+			<p
+				class="mx-auto hidden max-w-3xl px-4 pt-6 text-center text-[0.7rem] leading-snug text-neutral-600 print:block break-all"
+				aria-hidden="true"
+			>
+				{canonical}
+			</p>
+		) : null}
 	</body>
 </html>

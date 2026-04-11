@@ -18,7 +18,7 @@ const { recipe } = Astro.props;
 	<article>
 		<HeroRecipe recipe={recipe} />
 
-		<div class="mx-auto max-w-3xl space-y-8 px-4 pb-16">
+		<div class="mx-auto max-w-3xl space-y-8 px-4 pb-16 print:space-y-3 print:pb-4 print:pt-0">
 			<AuthorCard />
 
 			<RecipeIntro introduction={recipe.introduction} />
@@ -26,11 +26,15 @@ const { recipe } = Astro.props;
 			<RecipeBox recipe={recipe} />
 
 			{recipe.tips ? (
-				<TipsBox tips={recipe.tips} />
+				<div class="print:hidden">
+					<TipsBox tips={recipe.tips} />
+				</div>
 			) : null}
 
 			{recipe.nutrition ? (
-				<NutritionGrid nutrition={recipe.nutrition} />
+				<div class="print:hidden">
+					<NutritionGrid nutrition={recipe.nutrition} />
+				</div>
 			) : null}
 		</div>
 	</article>

@@ -44,3 +44,27 @@
 		-moz-osx-font-smoothing: grayscale;
 	}
 }
+
+/* Impression : fond neutre, contraste papier, pas d’ombres portées */
+@media print {
+	@page {
+		margin: 10mm 12mm;
+	}
+
+	html {
+		background: #fff;
+	}
+
+	body {
+		min-height: 0;
+		background: #fff !important;
+		color: #1a1814 !important;
+		print-color-adjust: economy;
+	}
+
+	/* Évite les artefacts d’ombres / halos sur papier */
+	* {
+		box-shadow: none !important;
+		text-shadow: none !important;
+	}
+}

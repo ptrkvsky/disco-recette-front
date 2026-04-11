@@ -21,11 +21,11 @@ const totalMin =
 	(recipe.prepTimeMin ?? 0) + (recipe.cookTimeMin ?? 0) || null;
 ---
 
-<section class="mx-auto max-w-5xl px-4 pb-8 pt-6 md:pb-12 md:pt-10">
-	<div class="grid items-start gap-6 md:grid-cols-[1fr_1.1fr] md:gap-10">
-		<div class="flex flex-col gap-5">
+<section class="mx-auto max-w-5xl px-4 pb-8 pt-6 md:pb-12 md:pt-10 print:px-3 print:pb-3 print:pt-3">
+	<div class="grid items-start gap-6 md:grid-cols-[1fr_1.1fr] md:gap-10 print:grid-cols-1 print:gap-2">
+		<div class="flex flex-col gap-5 print:gap-2">
 			<nav
-				class="text-sm text-muted"
+				class="text-sm text-muted print:hidden"
 				aria-label="Fil d'Ariane"
 			>
 				<a class="text-link no-underline hover:underline" href="/">Recettes</a>
@@ -33,27 +33,27 @@ const totalMin =
 				<span class="text-foreground">{recipe.title}</span>
 			</nav>
 
-			<h1 class="font-serif text-[clamp(2rem,5vw,3.25rem)] font-bold leading-[1.1] tracking-tight">
+			<h1 class="font-serif text-[clamp(2rem,5vw,3.25rem)] font-bold leading-[1.1] tracking-tight print:text-[1.5rem]">
 				{recipe.title}
 			</h1>
 
 			{recipe.excerpt ? (
-				<p class="text-lg leading-relaxed text-muted">{recipe.excerpt}</p>
+				<p class="text-lg leading-relaxed text-muted print:text-sm print:leading-snug">{recipe.excerpt}</p>
 			) : null}
 
-			<div class="flex flex-wrap items-center gap-2.5 text-sm">
+			<div class="flex flex-wrap items-center gap-2.5 text-sm print:gap-1.5 print:text-xs">
 				{totalMin != null && totalMin > 0 ? (
-					<span class="inline-flex items-center gap-1.5 rounded-full bg-badge px-3 py-1 font-medium text-badge-fg">
-						<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+					<span class="inline-flex items-center gap-1.5 rounded-full bg-badge px-3 py-1 font-medium text-badge-fg print:px-2 print:py-0.5">
+						<svg class="h-4 w-4 print:h-3 print:w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
 						{totalMin} min
 					</span>
 				) : null}
-				<span class="inline-flex items-center gap-1.5 rounded-full bg-badge px-3 py-1 font-medium text-badge-fg">
-					<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+				<span class="inline-flex items-center gap-1.5 rounded-full bg-badge px-3 py-1 font-medium text-badge-fg print:px-2 print:py-0.5">
+					<svg class="h-4 w-4 print:h-3 print:w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
 					{recipe.baseServings} portions
 				</span>
 				{recipe.difficulty ? (
-					<span class="inline-flex items-center gap-1.5 rounded-full bg-badge px-3 py-1 font-medium text-badge-fg">
+					<span class="inline-flex items-center gap-1.5 rounded-full bg-badge px-3 py-1 font-medium text-badge-fg print:px-2 print:py-0.5">
 						{labelDifficulty(recipe.difficulty)}
 					</span>
 				) : null}
@@ -61,7 +61,7 @@ const totalMin =
 
 			<a
 				href="#recette"
-				class="mt-1 inline-flex w-fit items-center gap-2 rounded-full bg-accent px-6 py-2.5 text-sm font-semibold text-accent-fg shadow-sm transition hover:opacity-90"
+				class="mt-1 inline-flex w-fit items-center gap-2 rounded-full bg-accent px-6 py-2.5 text-sm font-semibold text-accent-fg shadow-sm transition hover:opacity-90 print:hidden"
 			>
 				Aller à la recette
 				<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
@@ -69,7 +69,7 @@ const totalMin =
 		</div>
 
 		{heroUrl ? (
-			<figure class="m-0 overflow-hidden rounded-2xl shadow-lg md:sticky md:top-6">
+			<figure class="m-0 overflow-hidden rounded-2xl shadow-lg md:sticky md:top-6 print:hidden">
 				<img
 					class="block aspect-3/2 w-full object-cover"
 					src={heroUrl}
@@ -83,7 +83,7 @@ const totalMin =
 			</figure>
 		) : (
 			<div
-				class="aspect-3/2 w-full rounded-2xl bg-linear-to-br from-[#e8e4df] to-[#d4cfc7]"
+				class="aspect-3/2 w-full rounded-2xl bg-linear-to-br from-[#e8e4df] to-[#d4cfc7] print:hidden"
 				aria-hidden="true"
 			/>
 		)}

@@ -7,7 +7,7 @@ const { introduction } = Astro.props;
 ---
 
 {introduction ? (
-	<section class="mx-auto max-w-prose">
+	<section class="mx-auto max-w-prose print:hidden">
 		<div class="whitespace-pre-wrap text-base leading-relaxed text-muted md:text-[1.1rem]">
 			{introduction}
 		</div>
