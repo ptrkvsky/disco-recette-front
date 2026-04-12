@@ -1,0 +1,100 @@
+---
+import AuthorSocialLinks from './author-social-links.astro';
+import RecipeCard from './recipe-card.astro';
+import { portableTextToHtml } from '../lib/portable-text-html';
+import { urlForRecipeImage } from '../lib/sanity-image';
+import { t } from '../i18n/t';
+import type { AuthorWithRecipes } from '../types/author';
+
+interface Props {
+	author: AuthorWithRecipes;
+}
+
+const { author } = Astro.props;
+
+const avatarUrl = urlForRecipeImage(author.image, { width: 200, height: 200 });
+const bioHtmlRaw = portableTextToHtml(author.bio ?? null);
+const bioHtml = bioHtmlRaw.trim() ? bioHtmlRaw : '';
+const recipes = author.recipes ?? [];
+---
+
+<main class="mx-auto max-w-6xl px-4 pb-16">
+	<nav class="pt-6" aria-label={t('author.pageNavAria')}>
+		<a
+			class="text-sm font-medium text-accent no-underline underline-offset-2 hover:underline"
+			href="/"
+		>
+			{t('author.backToHome')}
+		</a>
+	</nav>
+
+	<header class="mt-8 flex flex-col gap-6 border-b border-border/60 pb-10 md:flex-row md:items-start">
+		<div class="shrink-0">
+			{
+				avatarUrl ? (
+					<img
+						class="mx-auto h-32 w-32 rounded-full object-cover ring-2 ring-border/40 md:mx-0 md:h-40 md:w-40"
+						src={avatarUrl}
+						alt={t('author.photoAlt', { name: author.name })}
+						width="160"
+						height="160"
+						loading="eager"
+						decoding="async"
+					/>
+				) : (
+					<div
+						class="mx-auto flex h-32 w-32 items-center justify-center rounded-full bg-accent text-2xl font-bold text-accent-fg md:mx-0 md:h-40 md:w-40 md:text-3xl"
+						aria-hidden="true"
+					>
+						{author.name
+							.split(' ')
+							.map((w) => w[0])
+							.join('')
+							.slice(0, 2)
+							.toUpperCase()}
+					</div>
+				)
+			}
+		</div>
+		<div class="min-w-0 flex-1 space-y-4 text-center md:text-left">
+			<p class="m-0 text-xs font-medium uppercase tracking-wide text-muted">
+				{t('author.pageKicker')}
+			</p>
+			<h1 class="m-0 text-[clamp(1.75rem,4vw,2.25rem)] font-semibold leading-tight">
+				{author.name}
+			</h1>
+			{
+				bioHtml ? (
+					<div
+						class="author-bio-rich mx-auto max-w-2xl text-left text-base leading-relaxed text-muted [&_a]:text-accent [&_a]:underline [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:my-2 [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-5 md:mx-0"
+						set:html={bioHtml}
+					/>
+				) : null
+			}
+			<div class="flex justify-center md:justify-start">
+				<AuthorSocialLinks name={author.name} social={author.social} />
+			</div>
+		</div>
+	</header>
+
+	<section class="mt-12" aria-labelledby="author-recipes-heading">
+		<h2 id="author-recipes-heading" class="m-0 mb-6 text-xl font-semibold">
+			{t('author.recipesHeading')}
+		</h2>
+		{
+			recipes.length === 0 ? (
+				<p class="m-0 text-muted">{t('author.emptyRecipes')}</p>
+			) : (
+				<ul class="m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(17rem,1fr))] gap-6 p-0">
+					{recipes.map((recipe) => (
+						<li class="m-0 flex min-w-0">
+							<div class="flex min-h-0 min-w-0 flex-1 flex-col">
+								<RecipeCard recipe={recipe} />
+							</div>
+						</li>
+					))}
+				</ul>
+			)
+		}
+	</section>
+</main>

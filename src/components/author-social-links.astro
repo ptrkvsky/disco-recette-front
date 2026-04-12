@@ -1,0 +1,53 @@
+---
+import type { MessageKey } from '../i18n/t';
+import { t } from '../i18n/t';
+import type { RecipeAuthorSocial } from '../types/recipe';
+
+interface Props {
+	name: string;
+	social?: RecipeAuthorSocial | null;
+}
+
+const { name, social } = Astro.props;
+
+const SOCIAL_LINKS: { field: keyof RecipeAuthorSocial; labelKey: MessageKey }[] = [
+	{ field: 'website', labelKey: 'author.social.website' },
+	{ field: 'instagram', labelKey: 'author.social.instagram' },
+	{ field: 'facebook', labelKey: 'author.social.facebook' },
+	{ field: 'youtube', labelKey: 'author.social.youtube' },
+	{ field: 'tiktok', labelKey: 'author.social.tiktok' },
+	{ field: 'linkedin', labelKey: 'author.social.linkedin' },
+	{ field: 'bluesky', labelKey: 'author.social.bluesky' },
+	{ field: 'mastodon', labelKey: 'author.social.mastodon' },
+];
+
+const socialEntries = SOCIAL_LINKS.map(({ field, labelKey }) => {
+	const href = social?.[field]?.trim();
+	if (!href) return null;
+	const label = t(labelKey);
+	return { href, label, aria: t('author.socialAria', { name, label }) };
+}).filter((e): e is NonNullable<typeof e> => e != null);
+---
+
+{
+	socialEntries.length ? (
+		<ul
+			class="m-0 flex list-none flex-wrap gap-x-3 gap-y-1.5 p-0 text-xs font-medium md:text-sm"
+			aria-label={t('author.socialGroupAria', { name })}
+		>
+			{socialEntries.map(({ href, label, aria }) => (
+				<li>
+					<a
+						class="text-accent underline decoration-border/60 underline-offset-2 hover:decoration-accent"
+						href={href}
+						target="_blank"
+						rel="noopener noreferrer"
+						aria-label={aria}
+					>
+						{label}
+					</a>
+				</li>
+			))}
+		</ul>
+	) : null
+}

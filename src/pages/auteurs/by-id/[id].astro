@@ -1,0 +1,48 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import AuthorProfileMain from '../../../components/author-profile-main.astro';
+import { buildAuthorPersonJsonLd } from '../../../lib/author-jsonld';
+import { AUTHOR_IDS_QUERY, AUTHOR_PAGE_BY_ID_QUERY } from '../../../lib/groq/authors';
+import { sanityClient } from '../../../lib/sanity-client';
+import { urlForRecipeImage } from '../../../lib/sanity-image';
+import { t } from '../../../i18n/t';
+import type { AuthorWithRecipes } from '../../../types/author';
+
+export async function getStaticPaths() {
+	const ids = await sanityClient.fetch<string[]>(AUTHOR_IDS_QUERY);
+	return ids.map((id) => ({
+		params: { id },
+	}));
+}
+
+const id = Astro.params.id;
+if (!id) {
+	return new Response(null, { status: 404, statusText: 'Not Found' });
+}
+
+const author = await sanityClient.fetch<AuthorWithRecipes | null>(AUTHOR_PAGE_BY_ID_QUERY, {
+	id,
+});
+
+if (!author) {
+	return new Response(null, { status: 404, statusText: 'Not Found' });
+}
+
+const slug = author.slug?.trim();
+const canonicalPath = slug && slug.length > 0 ? `/auteurs/${slug}` : `/auteurs/by-id/${id}`;
+const canonical = new URL(canonicalPath, Astro.site).href;
+
+const pageTitle = `${author.name} | ${t('author.pageTitleSuffix')}`;
+const avatarLarge = urlForRecipeImage(author.image, { width: 800, height: 800 });
+
+const jsonLd = buildAuthorPersonJsonLd({
+	name: author.name,
+	canonicalUrl: canonical,
+	imageUrl: avatarLarge,
+	social: author.social,
+});
+---
+
+<Layout title={pageTitle} canonical={canonical} jsonLd={jsonLd}>
+	<AuthorProfileMain author={author} />
+</Layout>

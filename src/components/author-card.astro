@@ -1,17 +1,37 @@
 ---
+import AuthorSocialLinks from './author-social-links.astro';
 import { t } from '../i18n/t';
+import type { RecipeAuthorSocial } from '../types/recipe';
 
 interface Props {
 	name?: string;
 	avatarUrl?: string;
+	/** Texte simple (auteur par défaut sans document Sanity) */
 	bio?: string;
+	/** Bio riche (HTML généré côté serveur depuis Portable Text) */
+	bioHtml?: string;
+	/** Document auteur Sanity lié (désactive la bio par défaut i18n si vide) */
+	authorFromSanity?: boolean;
+	/** Lien vers la page profil auteur (ex. /auteurs/slug) */
+	nameHref?: string;
+	social?: RecipeAuthorSocial | null;
 }
 
 const {
 	name = t('author.defaultName'),
 	avatarUrl,
-	bio = t('author.defaultBio'),
+	bio,
+	bioHtml,
+	authorFromSanity = false,
+	nameHref,
+	social,
 } = Astro.props;
+
+const resolvedPlainBio =
+	bio !== undefined ? bio : authorFromSanity ? undefined : t('author.defaultBio');
+
+const showRichBio = Boolean(bioHtml?.trim());
+const showPlainBio = !showRichBio && Boolean(resolvedPlainBio?.trim());
 
 const initials = name
 	.split(' ')
@@ -21,30 +41,83 @@ const initials = name
 	.toUpperCase();
 ---
 
-<div class="flex items-center gap-4 rounded-xl border border-border/50 bg-surface px-4 py-4 md:px-6 print:hidden">
-	{avatarUrl ? (
-		<img
-			class="h-12 w-12 shrink-0 rounded-full object-cover md:h-14 md:w-14"
-			src={avatarUrl}
-			alt={t('author.photoAlt', { name })}
-			width="56"
-			height="56"
-			loading="lazy"
-			decoding="async"
-		/>
-	) : (
-		<div
-			class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-accent text-sm font-bold text-accent-fg md:h-14 md:w-14 md:text-base"
-			aria-hidden="true"
-		>
-			{initials}
+<div class="flex items-start gap-4 rounded-xl border border-border/50 bg-surface px-4 py-4 md:px-6 print:hidden">
+	{
+		nameHref ? (
+			<a
+				class="mt-0.5 shrink-0 rounded-full outline-none ring-offset-2 ring-offset-surface focus-visible:ring-2 focus-visible:ring-accent"
+				href={nameHref}
+				aria-label={t('author.profileLinkAria', { name })}
+			>
+				{avatarUrl ? (
+					<img
+						class="h-12 w-12 rounded-full object-cover md:h-14 md:w-14"
+						src={avatarUrl}
+						alt={t('author.photoAlt', { name })}
+						width="56"
+						height="56"
+						loading="lazy"
+						decoding="async"
+					/>
+				) : (
+					<div
+						class="flex h-12 w-12 items-center justify-center rounded-full bg-accent text-sm font-bold text-accent-fg md:h-14 md:w-14 md:text-base"
+						aria-hidden="true"
+					>
+						{initials}
+					</div>
+				)}
+			</a>
+		) : avatarUrl ? (
+			<img
+				class="mt-0.5 h-12 w-12 shrink-0 rounded-full object-cover md:h-14 md:w-14"
+				src={avatarUrl}
+				alt={t('author.photoAlt', { name })}
+				width="56"
+				height="56"
+				loading="lazy"
+				decoding="async"
+			/>
+		) : (
+			<div
+				class="mt-0.5 flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-accent text-sm font-bold text-accent-fg md:h-14 md:w-14 md:text-base"
+				aria-hidden="true"
+			>
+				{initials}
+			</div>
+		)
+	}
+	<div class="min-w-0 flex-1 space-y-2">
+		<div>
+			<p class="m-0 text-xs font-medium uppercase tracking-wide text-muted">{t('author.byline')}</p>
+			<p class="m-0 text-base font-semibold leading-snug">
+				{
+					nameHref ? (
+						<a
+							class="font-semibold text-accent underline decoration-accent/50 underline-offset-2 transition-colors hover:decoration-accent"
+							href={nameHref}
+							aria-label={t('author.profileLinkAria', { name })}
+						>
+							{name}
+						</a>
+					) : (
+						name
+					)
+				}
+			</p>
 		</div>
-	)}
-	<div class="min-w-0">
-		<p class="m-0 text-xs font-medium uppercase tracking-wide text-muted">{t('author.byline')}</p>
-		<p class="m-0 text-base font-semibold leading-snug">{name}</p>
-		{bio ? (
-			<p class="m-0 mt-0.5 text-sm leading-snug text-muted line-clamp-2">{bio}</p>
-		) : null}
+
+		{
+			showRichBio ? (
+				<div
+					class="author-bio-rich text-sm leading-snug text-muted [&_a]:text-accent [&_a]:underline [&_ol]:my-1 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:my-1 [&_ul]:my-1 [&_ul]:list-disc [&_ul]:pl-5"
+					set:html={bioHtml!}
+				/>
+			) : showPlainBio ? (
+				<p class="m-0 text-sm leading-snug text-muted line-clamp-2">{resolvedPlainBio}</p>
+			) : null
+		}
+
+		<AuthorSocialLinks name={name} social={social} />
 	</div>
 </div>

@@ -13,6 +13,8 @@
   },
   "dependencies": {
     "@fontsource-variable/playfair-display": "^5.2.8",
+    "@portabletext/to-html": "^5",
+    "@portabletext/types": "^4",
     "@sanity/client": "^7.20.0",
     "@sanity/image-url": "^2.1.1",
     "@tailwindcss/vite": "^4.2.2",

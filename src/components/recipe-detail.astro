@@ -6,12 +6,25 @@ import RecipeIntro from './recipe-intro.astro';
 import RecipeBox from './recipe-box.astro';
 import TipsBox from './tips-box.astro';
 import NutritionGrid from './nutrition-grid.astro';
+import { portableTextToHtml } from '../lib/portable-text-html';
+import { urlForRecipeImage } from '../lib/sanity-image';
 
 interface Props {
 	recipe: RecipeDetail;
 }
 
 const { recipe } = Astro.props;
+const author = recipe.author;
+const avatarUrl = urlForRecipeImage(author?.image ?? null, { width: 112, height: 112 });
+const rawBioHtml = author != null ? portableTextToHtml(author.bio ?? null) : '';
+const authorBioHtml = rawBioHtml.trim() ? rawBioHtml : undefined;
+const authorSlug = author?.slug?.trim();
+const authorProfileHref =
+	authorSlug != null && authorSlug.length > 0
+		? `/auteurs/${authorSlug}`
+		: author?._id
+			? `/auteurs/by-id/${author._id}`
+			: undefined;
 ---
 
 <main>
@@ -19,7 +32,14 @@ const { recipe } = Astro.props;
 		<HeroRecipe recipe={recipe} />
 
 		<div class="mx-auto max-w-3xl space-y-8 px-4 pb-16 print:space-y-3 print:pb-4 print:pt-0">
-			<AuthorCard />
+			<AuthorCard
+				name={author?.name}
+				avatarUrl={avatarUrl}
+				authorFromSanity={author != null}
+				bioHtml={authorBioHtml}
+				nameHref={authorProfileHref}
+				social={author?.social}
+			/>
 
 			<RecipeIntro introduction={recipe.introduction} />
 

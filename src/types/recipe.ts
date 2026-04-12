@@ -1,3 +1,5 @@
+import type { PortableTextBlock } from '@portabletext/types';
+
 export type RecipeDifficulty = 'easy' | 'medium' | 'hard';
 
 /** Projection `mainImage` pour @sanity/image-url (référence d’asset + hotspot/crop). */
@@ -8,6 +10,26 @@ export type RecipeMainImage = {
 	hotspot?: Record<string, unknown> | null;
 	crop?: Record<string, unknown> | null;
 } | null;
+
+export type RecipeAuthorSocial = {
+	website?: string | null;
+	instagram?: string | null;
+	facebook?: string | null;
+	youtube?: string | null;
+	tiktok?: string | null;
+	linkedin?: string | null;
+	bluesky?: string | null;
+	mastodon?: string | null;
+};
+
+export type RecipeAuthor = {
+	_id?: string;
+	name: string;
+	slug?: string | null;
+	bio?: PortableTextBlock[] | null;
+	social?: RecipeAuthorSocial | null;
+	image?: RecipeMainImage;
+};
 
 export type RecipeListItem = {
 	title: string;
@@ -58,6 +80,7 @@ export type RecipeDetail = RecipeListItem & {
 	steps?: RecipeStep[] | null;
 	nutrition?: RecipeNutrition | null;
 	tips?: string | null;
+	author?: RecipeAuthor | null;
 };
 
 export type RecipeSlugRow = { slug: string };

@@ -41,11 +41,18 @@ const imageUrls = [
 	urlForRecipeImage(recipe.mainImage, { width: 800, height: 533 }),
 ].filter((u): u is string => Boolean(u));
 
+const authorFromCms = recipe.author?.name?.trim();
+const authorName =
+	authorFromCms ||
+	(typeof import.meta.env.PUBLIC_RECIPE_AUTHOR_NAME === 'string'
+		? import.meta.env.PUBLIC_RECIPE_AUTHOR_NAME.trim()
+		: '');
+
 const jsonLd = buildRecipeSchemaGraph({
 	recipe,
 	canonicalUrl: canonical,
 	imageUrls,
-	authorName: import.meta.env.PUBLIC_RECIPE_AUTHOR_NAME,
+	authorName: authorName || undefined,
 });
 ---
 

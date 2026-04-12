@@ -11,6 +11,12 @@ importers:
       '@fontsource-variable/playfair-display':
         specifier: ^5.2.8
         version: 5.2.8
+      '@portabletext/to-html':
+        specifier: ^5
+        version: 5.0.2
+      '@portabletext/types':
+        specifier: ^4
+        version: 4.0.2
       '@sanity/client':
         specifier: ^7.20.0
         version: 7.20.0
@@ -397,6 +403,18 @@ packages:
 
   '@oslojs/encoding@1.1.0':
     resolution: {integrity: sha512-70wQhgYmndg4GCPxPPxPGevRKqTIJ2Nh4OkiMWmDAVYsTQ+Ta7Sq+rPevXyXGdzr30/qZBnyOalCszoMxlyldQ==}
+
+  '@portabletext/to-html@5.0.2':
+    resolution: {integrity: sha512-w59PcErj5JXUCv9tbV2npqJmcnORTAftCMLp0vc9FnWrXL3C9qYvuB2MQbdHsZEOesF3VmwqUsYUgjm7PX4JTw==}
+    engines: {node: '>=20.19 <22 || >=22.12'}
+
+  '@portabletext/toolkit@5.0.2':
+    resolution: {integrity: sha512-Njc1LE1PMJkTx/wEPqZ6sOWGgFgX2B47fxpOQ/Ia4ByhsZoA5Sq8dNvvV5F052j/xE8TbOLiBEjS848FkKADDQ==}
+    engines: {node: '>=20.19 <22 || >=22.12'}
+
+  '@portabletext/types@4.0.2':
+    resolution: {integrity: sha512-djfIGU9n6DRrunlvj2nIDAp17URo/nA4jSXGvf+Gupx8NLLy9fmJBZ3GL8yhqn9lSVc+cKCharjOa3aOBnWbRw==}
+    engines: {node: '>=20.19 <22 || >=22.12'}
 
   '@rollup/pluginutils@5.3.0':
     resolution: {integrity: sha512-5EdhGZtnu3V88ces7s53hhfK5KSASnJZv8Lulpc04cWO3REESroJXg73DFsOmgbU2BhwV0E20bu2IDZb3VKW4Q==}
@@ -1962,6 +1980,17 @@ snapshots:
   '@noble/hashes@2.0.1': {}
 
   '@oslojs/encoding@1.1.0': {}
+
+  '@portabletext/to-html@5.0.2':
+    dependencies:
+      '@portabletext/toolkit': 5.0.2
+      '@portabletext/types': 4.0.2
+
+  '@portabletext/toolkit@5.0.2':
+    dependencies:
+      '@portabletext/types': 4.0.2
+
+  '@portabletext/types@4.0.2': {}
 
   '@rollup/pluginutils@5.3.0(rollup@4.60.1)':
     dependencies:

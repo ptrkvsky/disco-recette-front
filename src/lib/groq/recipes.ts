@@ -55,5 +55,19 @@ export const RECIPE_BY_SLUG_QUERY = `*[_type == "recette" && slug.current == $sl
     ironMg
   },
   tips,
-  publishedAt
+  publishedAt,
+  author->{
+    _id,
+    name,
+    "slug": slug.current,
+    bio,
+    social,
+    image {
+      _type,
+      alt,
+      asset,
+      hotspot,
+      crop
+    }
+  }
 }`;
