@@ -1,4 +1,5 @@
 ---
+import { t } from '../i18n/t';
 import { urlForRecipeImage } from '../lib/sanity-image';
 import { labelDifficulty } from '../lib/recipe-labels';
 import type { RecipeDetail } from '../types/recipe';
@@ -15,7 +16,7 @@ const heroUrl = urlForRecipeImage(recipe.mainImage, {
 });
 const heroAlt =
 	recipe.mainImage?.alt?.trim() ||
-	`Photo principale : ${recipe.title}`;
+	t('hero.mainImageAlt', { title: recipe.title });
 
 const totalMin =
 	(recipe.prepTimeMin ?? 0) + (recipe.cookTimeMin ?? 0) || null;
@@ -26,9 +27,9 @@ const totalMin =
 		<div class="flex flex-col gap-5 print:gap-2">
 			<nav
 				class="text-sm text-muted print:hidden"
-				aria-label="Fil d'Ariane"
+				aria-label={t('hero.breadcrumbAria')}
 			>
-				<a class="text-link no-underline hover:underline" href="/">Recettes</a>
+				<a class="text-link no-underline hover:underline" href="/">{t('home.h1')}</a>
 				<span class="mx-1.5 opacity-60" aria-hidden="true">/</span>
 				<span class="text-foreground">{recipe.title}</span>
 			</nav>
@@ -45,12 +46,12 @@ const totalMin =
 				{totalMin != null && totalMin > 0 ? (
 					<span class="inline-flex items-center gap-1.5 rounded-full bg-badge px-3 py-1 font-medium text-badge-fg print:px-2 print:py-0.5">
 						<svg class="h-4 w-4 print:h-3 print:w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-						{totalMin} min
+						{t('time.minutes', { n: totalMin })}
 					</span>
 				) : null}
 				<span class="inline-flex items-center gap-1.5 rounded-full bg-badge px-3 py-1 font-medium text-badge-fg print:px-2 print:py-0.5">
 					<svg class="h-4 w-4 print:h-3 print:w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-					{recipe.baseServings} portions
+					{t('hero.recipePortions', { n: recipe.baseServings })}
 				</span>
 				{recipe.difficulty ? (
 					<span class="inline-flex items-center gap-1.5 rounded-full bg-badge px-3 py-1 font-medium text-badge-fg print:px-2 print:py-0.5">
@@ -63,7 +64,7 @@ const totalMin =
 				href="#recette"
 				class="mt-1 inline-flex w-fit items-center gap-2 rounded-full bg-accent px-6 py-2.5 text-sm font-semibold text-accent-fg shadow-sm transition hover:opacity-90 print:hidden"
 			>
-				Aller à la recette
+				{t('hero.jumpToRecipe')}
 				<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
 			</a>
 		</div>

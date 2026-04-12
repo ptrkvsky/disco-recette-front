@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import RecipeDetail from '../../components/recipe-detail.astro';
+import { t } from '../../i18n/t';
 import { sanityClient } from '../../lib/sanity-client';
 import {
 	RECIPE_BY_SLUG_QUERY,
@@ -31,7 +32,7 @@ if (!recipe) {
 	return new Response(null, { status: 404, statusText: 'Not Found' });
 }
 
-const pageTitle = `${recipe.title} | Recettes`;
+const pageTitle = `${recipe.title} | ${t('recipe.pageTitleSuffix')}`;
 const pageDescription = recipe.excerpt ?? undefined;
 
 const canonical = new URL(`/recettes/${slug}`, Astro.site).href;

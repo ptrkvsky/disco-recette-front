@@ -12,59 +12,61 @@
 @source "../**/*.tsx";
 
 @theme {
-	--color-page: #f9f7f4;
-	--color-surface: #fffefb;
-	--color-foreground: #1a1814;
-	--color-muted: #5c574e;
-	--color-border: #d8d2c6;
-	--color-badge: #ebe6dc;
-	--color-badge-fg: #3d392f;
-	--color-link: #2f6f62;
-	--color-accent: #6b7c4e;
-	/* Texte / icônes sur fonds clairs (#faf8f3, accent/10, etc.) — contraste ≥ AA */
-	--color-accent-on-surface: #4a5a38;
-	--color-accent-fg: #ffffff;
-	--color-recipe-bg: #faf8f3;
-	--font-serif: 'Playfair Display Variable', 'Georgia', serif;
+  --color-page: #f9f7f4;
+  --color-surface: #fffefb;
+  --color-foreground: #1a1814;
+  --color-muted: #5c574e;
+  --color-border: #d8d2c6;
+  --color-badge: #ebe6dc;
+  --color-badge-fg: #3d392f;
+  --color-link: #2f6f62;
+  --color-accent: #6b7c4e;
+  /* Texte / icônes sur fonds clairs (#faf8f3, accent/10, etc.) — contraste ≥ AA */
+  --color-accent-on-surface: #4a5a38;
+  --color-accent-fg: #ffffff;
+  --color-recipe-bg: #faf8f3;
+  --font-serif: "Playfair Display Variable", "Georgia", serif;
 }
-
+/* F9F7F4 */
 @layer base {
-	html {
-		scroll-behavior: smooth;
-	}
+  html {
+    scroll-behavior: smooth;
+  }
 
-	body {
-		min-height: 100vh;
-		min-height: 100dvh;
-		background-color: var(--color-surface);
-		color: var(--color-foreground);
-		font-family: var(--font-sans);
-		line-height: var(--leading-normal);
-		-webkit-font-smoothing: antialiased;
-		-moz-osx-font-smoothing: grayscale;
-	}
+  body {
+    min-height: 100vh;
+    min-height: 100dvh;
+    background-color: var(--color-surface);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    line-height: var(--leading-normal);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 }
+
+/* 1A1814 */
 
 /* Impression : fond neutre, contraste papier, pas d’ombres portées */
 @media print {
-	@page {
-		margin: 10mm 12mm;
-	}
+  @page {
+    margin: 10mm 12mm;
+  }
 
-	html {
-		background: #fff;
-	}
+  html {
+    background: #fff;
+  }
 
-	body {
-		min-height: 0;
-		background: #fff !important;
-		color: #1a1814 !important;
-		print-color-adjust: economy;
-	}
+  body {
+    min-height: 0;
+    background: #fff !important;
+    color: #1a1814 !important;
+    print-color-adjust: economy;
+  }
 
-	/* Évite les artefacts d’ombres / halos sur papier */
-	* {
-		box-shadow: none !important;
-		text-shadow: none !important;
-	}
+  /* Évite les artefacts d’ombres / halos sur papier */
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
 }

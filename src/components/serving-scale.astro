@@ -1,13 +1,31 @@
 ---
+import { getActiveLocale, intlLocaleTag } from '../i18n/locale';
+import { rawMessage, t } from '../i18n/t';
+
 interface Props {
 	baseServings: number;
 }
 
 const { baseServings } = Astro.props;
+const intlTag = intlLocaleTag(getActiveLocale());
 
-const portionLabel = (n: number) =>
-	n === 1 ? '1 portion' : `${n} portions`;
-const initialPrintSummary = `Quantités pour ${portionLabel(baseServings)} (recette de base : ${portionLabel(baseServings)}).`;
+function portionLabel(n: number): string {
+	return n === 1 ? t('serving.portionOne') : t('serving.portionMany', { n });
+}
+const initialPrintSummary = t('serving.printSummary', {
+	desiredLabel: portionLabel(baseServings),
+	baseLabel: portionLabel(baseServings),
+});
+
+const i18nScript = {
+	baseServings,
+	intlTag,
+	msgEmDash: t('serving.emDash'),
+	msgPortionOne: t('serving.portionOne'),
+	tplPortionMany: rawMessage('serving.portionMany'),
+	tplPrintSummary: rawMessage('serving.printSummary'),
+	tplHintScaled: rawMessage('serving.hintScaled'),
+};
 ---
 
 <div class="flex w-full max-w-full flex-col items-end gap-2 print:w-full print:items-stretch">
@@ -19,14 +37,14 @@ const initialPrintSummary = `Quantités pour ${portionLabel(baseServings)} (rece
 	</p>
 	<div class="flex flex-wrap items-center gap-3 print:hidden" data-serving-scale-controls>
 	<label class="text-sm font-semibold" for="desired-servings">
-		Portions
+		{t('serving.portions')}
 	</label>
 	<div class="flex items-center gap-1.5">
 		<button
 			type="button"
 			class="flex h-8 w-8 items-center justify-center rounded-full border border-border text-lg font-bold leading-none transition hover:bg-accent hover:text-accent-fg"
 			data-role="decrement"
-			aria-label="Réduire les portions"
+			aria-label={t('serving.decrementAria')}
 		>
 			−
 		</button>
@@ -43,19 +61,19 @@ const initialPrintSummary = `Quantités pour ${portionLabel(baseServings)} (rece
 			type="button"
 			class="flex h-8 w-8 items-center justify-center rounded-full border border-border text-lg font-bold leading-none transition hover:bg-accent hover:text-accent-fg"
 			data-role="increment"
-			aria-label="Augmenter les portions"
+			aria-label={t('serving.incrementAria')}
 		>
 			+
 		</button>
 	</div>
 	<span class="text-sm text-muted" id="scale-hint" aria-live="polite">
-		(base : {baseServings})
+		{t('serving.baseHint', { n: baseServings })}
 	</span>
 	</div>
 </div>
 
-<script define:vars={{ baseServings }}>
-	const nf = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 2 });
+<script define:vars={{ ...i18nScript }}>
+	const nf = new Intl.NumberFormat(intlTag, { maximumFractionDigits: 2 });
 
 	function initServingScale() {
 		const input = document.getElementById('desired-servings');
@@ -71,6 +89,10 @@ const initialPrintSummary = `Quantités pour ${portionLabel(baseServings)} (rece
 			return Number.isFinite(raw) && raw >= 1 ? Math.floor(raw) : baseServings;
 		}
 
+		function portionLabelJs(n) {
+			return n === 1 ? msgPortionOne : tplPortionMany.replace('{n}', String(n));
+		}
+
 		function apply() {
 			const desired = getDesired();
 			if (input && String(desired) !== input.value) input.value = String(desired);
@@ -78,28 +100,44 @@ const initialPrintSummary = `Quantités pour ${portionLabel(baseServings)} (rece
 			root?.querySelectorAll('[data-role="qty"]').forEach((el) => {
 				if (!(el instanceof HTMLElement)) return;
 				const raw = el.dataset.baseQty ?? '';
-				if (raw === '') { el.textContent = '—'; return; }
+				if (raw === '') {
+					el.textContent = msgEmDash;
+					return;
+				}
 				const base = Number(raw);
-				if (Number.isNaN(base)) { el.textContent = '—'; return; }
+				if (Number.isNaN(base)) {
+					el.textContent = msgEmDash;
+					return;
+				}
 				el.textContent = nf.format(base * factor);
 			});
 			if (hint) {
-				hint.textContent = `(${desired} / base : ${baseServings})`;
+				hint.textContent = tplHintScaled
+					.replace('{desired}', String(desired))
+					.replace('{base}', String(baseServings));
 			}
 			if (printSummary) {
-				const dLabel = desired === 1 ? '1 portion' : `${desired} portions`;
-				const bLabel = baseServings === 1 ? '1 portion' : `${baseServings} portions`;
-				printSummary.textContent = `Quantités pour ${dLabel} (recette de base : ${bLabel}).`;
+				const dLabel = portionLabelJs(desired);
+				const bLabel = portionLabelJs(baseServings);
+				printSummary.textContent = tplPrintSummary
+					.replace('{desiredLabel}', dLabel)
+					.replace('{baseLabel}', bLabel);
 			}
 		}
 
 		decBtn?.addEventListener('click', () => {
 			const d = getDesired();
-			if (d > 1 && input) { input.value = String(d - 1); apply(); }
+			if (d > 1 && input) {
+				input.value = String(d - 1);
+				apply();
+			}
 		});
 		incBtn?.addEventListener('click', () => {
 			const d = getDesired();
-			if (input) { input.value = String(d + 1); apply(); }
+			if (input) {
+				input.value = String(d + 1);
+				apply();
+			}
 		});
 		input?.addEventListener('input', apply);
 		input?.addEventListener('change', apply);

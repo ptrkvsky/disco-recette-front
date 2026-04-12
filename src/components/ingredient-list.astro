@@ -1,4 +1,6 @@
 ---
+import { getActiveLocale, intlLocaleTag } from '../i18n/locale';
+import { t } from '../i18n/t';
 import type { RecipeIngredient } from '../types/recipe';
 
 interface Props {
@@ -7,7 +9,9 @@ interface Props {
 }
 
 const { ingredients, baseServings } = Astro.props;
-const qtyFmt = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 2 });
+const qtyFmt = new Intl.NumberFormat(intlLocaleTag(getActiveLocale()), {
+	maximumFractionDigits: 2,
+});
 ---
 
 <div data-serving-scale>
@@ -39,7 +43,7 @@ const qtyFmt = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 2 });
 						<span class="text-sm italic text-muted">{` (${ing.note})`}</span>
 					) : null}
 					{ing.optional ? (
-						<span class="text-sm text-muted"> — optionnel</span>
+						<span class="text-sm text-muted">{t('ingredient.optional')}</span>
 					) : null}
 				</label>
 			</li>

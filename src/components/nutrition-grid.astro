@@ -1,5 +1,6 @@
 ---
-import { nutritionFieldLabels } from '../lib/recipe-labels';
+import { t } from '../i18n/t';
+import { nutritionFieldLabel } from '../lib/recipe-labels';
 import type { RecipeNutrition } from '../types/recipe';
 
 interface Props {
@@ -20,7 +21,7 @@ const entries = Object.entries(nutrition).filter(
 {entries.length > 0 || nutrition.note ? (
 	<section class="mt-8" aria-labelledby="nut-heading">
 		<h2 id="nut-heading" class="m-0 mb-4 text-lg font-semibold text-muted">
-			Informations nutritionnelles
+			{t('nutrition.title')}
 		</h2>
 		{nutrition.note ? (
 			<p class="mb-3 text-sm leading-relaxed text-muted italic">{nutrition.note}</p>
@@ -29,7 +30,7 @@ const entries = Object.entries(nutrition).filter(
 			<dl class="m-0 grid grid-cols-2 gap-2 sm:grid-cols-3">
 				{entries.map(([key, value]) => (
 					<div class="flex flex-col-reverse gap-0.5 rounded-lg bg-page px-3 py-2.5 text-center">
-						<dt class="m-0 text-xs text-muted">{nutritionFieldLabels[key] ?? key}</dt>
+						<dt class="m-0 text-xs text-muted">{nutritionFieldLabel(key)}</dt>
 						<dd class="m-0 text-lg font-bold tabular-nums">{value}</dd>
 					</div>
 				))}

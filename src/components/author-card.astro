@@ -1,4 +1,6 @@
 ---
+import { t } from '../i18n/t';
+
 interface Props {
 	name?: string;
 	avatarUrl?: string;
@@ -6,9 +8,9 @@ interface Props {
 }
 
 const {
-	name = 'Marine Dupont',
+	name = t('author.defaultName'),
 	avatarUrl,
-	bio = 'Passionnée de cuisine du quotidien, je partage mes recettes testées et approuvées pour régaler toute la famille sans prise de tête.',
+	bio = t('author.defaultBio'),
 } = Astro.props;
 
 const initials = name
@@ -24,7 +26,7 @@ const initials = name
 		<img
 			class="h-12 w-12 shrink-0 rounded-full object-cover md:h-14 md:w-14"
 			src={avatarUrl}
-			alt={`Photo de ${name}`}
+			alt={t('author.photoAlt', { name })}
 			width="56"
 			height="56"
 			loading="lazy"
@@ -39,7 +41,7 @@ const initials = name
 		</div>
 	)}
 	<div class="min-w-0">
-		<p class="m-0 text-xs font-medium uppercase tracking-wide text-muted">Recette par</p>
+		<p class="m-0 text-xs font-medium uppercase tracking-wide text-muted">{t('author.byline')}</p>
 		<p class="m-0 text-base font-semibold leading-snug">{name}</p>
 		{bio ? (
 			<p class="m-0 mt-0.5 text-sm leading-snug text-muted line-clamp-2">{bio}</p>

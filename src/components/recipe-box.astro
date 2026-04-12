@@ -3,6 +3,7 @@ import MetaBar from './meta-bar.astro';
 import IngredientList from './ingredient-list.astro';
 import StepList from './step-list.astro';
 import ServingScale from './serving-scale.astro';
+import { t } from '../i18n/t';
 import type { RecipeDetail } from '../types/recipe';
 
 interface Props {
@@ -17,7 +18,7 @@ const steps = recipe.steps?.filter((s) => s?.instruction) ?? [];
 <section
 	id="recette"
 	class="mx-auto max-w-3xl scroll-mt-4 rounded-2xl bg-recipe-bg px-5 py-7 shadow-sm md:px-10 md:py-10 print:bg-white print:px-3 print:py-3 print:shadow-none"
-	aria-label={`Recette : ${recipe.title}`}
+	aria-label={t('recipeBox.sectionAria', { title: recipe.title })}
 >
 	<header class="mb-6 border-b border-border/40 pb-6 print:hidden">
 		<div class="mb-4 flex flex-wrap items-start justify-between gap-3">
@@ -28,10 +29,10 @@ const steps = recipe.steps?.filter((s) => s?.instruction) ?? [];
 				type="button"
 				class="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-muted transition hover:bg-white print:hidden"
 				onclick="window.print()"
-				aria-label="Imprimer la recette"
+				aria-label={t('recipeBox.printAria')}
 			>
 				<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-				Imprimer
+				{t('recipeBox.print')}
 			</button>
 		</div>
 
@@ -46,7 +47,7 @@ const steps = recipe.steps?.filter((s) => s?.instruction) ?? [];
 	{ingredients.length > 0 ? (
 		<div class="mb-8 print:mb-4">
 			<div class="mb-4 flex flex-wrap items-center justify-between gap-3 print:mb-2 print:flex-col print:items-stretch print:gap-1.5">
-				<h3 class="m-0 text-xl font-semibold print:text-lg">Ingrédients</h3>
+				<h3 class="m-0 text-xl font-semibold print:text-lg">{t('recipeBox.ingredients')}</h3>
 				<ServingScale baseServings={recipe.baseServings} />
 			</div>
 			<IngredientList ingredients={ingredients} baseServings={recipe.baseServings} />
@@ -55,7 +56,7 @@ const steps = recipe.steps?.filter((s) => s?.instruction) ?? [];
 
 	{steps.length > 0 ? (
 		<div>
-			<h3 class="m-0 mb-4 text-xl font-semibold print:mb-2 print:text-lg">Préparation</h3>
+			<h3 class="m-0 mb-4 text-xl font-semibold print:mb-2 print:text-lg">{t('recipeBox.stepsHeading')}</h3>
 			<StepList steps={steps} />
 		</div>
 	) : null}

@@ -1,3 +1,4 @@
+import { t } from '../i18n/t';
 import { labelDifficulty } from './recipe-labels';
 import type {
 	RecipeDetail,
@@ -5,8 +6,6 @@ import type {
 	RecipeNutrition,
 	RecipeStep,
 } from '../types/recipe';
-
-const DEFAULT_AUTHOR_NAME = 'Marie Dupont';
 
 export type RecipeSchemaGraph = {
 	'@context': 'https://schema.org';
@@ -31,7 +30,9 @@ function formatIngredientLine(ing: RecipeIngredient): string {
 		line = line ? `${line} (${ing.note.trim()})` : ing.note.trim();
 	}
 	if (ing.optional) {
-		line = line ? `${line} — optionnel` : 'Optionnel';
+		line = line
+			? `${line}${t('schema.ingredientOptionalSuffix')}`
+			: t('schema.ingredientOptionalOnly');
 	}
 	return line;
 }
@@ -116,7 +117,7 @@ export function buildRecipeSchemaGraph(input: {
 	authorName?: string;
 }): RecipeSchemaGraph {
 	const { recipe, canonicalUrl, imageUrls } = input;
-	const authorName = input.authorName?.trim() || DEFAULT_AUTHOR_NAME;
+	const authorName = input.authorName?.trim() || t('author.defaultName');
 	const recipeId = `${canonicalUrl}#recipe`;
 	const breadcrumbId = `${canonicalUrl}#breadcrumb`;
 	const origin = new URL(canonicalUrl).origin;
@@ -152,7 +153,7 @@ export function buildRecipeSchemaGraph(input: {
 
 	const difficultyLabel = labelDifficulty(recipe.difficulty);
 	const keywordsParts = [recipe.title];
-	if (recipe.difficulty && difficultyLabel !== '—') {
+	if (recipe.difficulty && difficultyLabel !== t('serving.emDash')) {
 		keywordsParts.push(difficultyLabel);
 	}
 	const keywords = keywordsParts.join(', ');
@@ -166,7 +167,10 @@ export function buildRecipeSchemaGraph(input: {
 			'@type': 'Person',
 			name: authorName,
 		},
-		recipeYield: `Pour ${recipe.baseServings} personne${recipe.baseServings > 1 ? 's' : ''}`,
+		recipeYield:
+			recipe.baseServings === 1
+				? t('schema.recipeYieldSingular')
+				: t('schema.recipeYieldPlural', { n: recipe.baseServings }),
 		keywords,
 	};
 
@@ -202,7 +206,7 @@ export function buildRecipeSchemaGraph(input: {
 			{
 				'@type': 'ListItem',
 				position: 1,
-				name: 'Recettes',
+				name: t('schema.breadcrumbHome'),
 				item: `${origin}/`,
 			},
 			{

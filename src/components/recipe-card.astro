@@ -1,4 +1,5 @@
 ---
+import { t } from '../i18n/t';
 import { urlForRecipeImage } from '../lib/sanity-image';
 import { labelDifficulty } from '../lib/recipe-labels';
 import type { RecipeListItem } from '../types/recipe';
@@ -15,7 +16,7 @@ const imgUrl = urlForRecipeImage(recipe.mainImage, {
 });
 const alt =
 	recipe.mainImage?.alt?.trim() ||
-	`Illustration de la recette « ${recipe.title} »`;
+	t('recipeCard.imageAlt', { title: recipe.title });
 const totalMin =
 	(recipe.prepTimeMin ?? 0) + (recipe.cookTimeMin ?? 0) || null;
 ---
@@ -58,7 +59,7 @@ const totalMin =
 				{
 					totalMin != null && totalMin > 0 ? (
 						<span class="rounded-full bg-badge px-2.5 py-0.5 text-[0.78rem] text-badge-fg">
-							{totalMin} min
+							{t('time.minutes', { n: totalMin })}
 						</span>
 					) : null
 				}
