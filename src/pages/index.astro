@@ -4,14 +4,39 @@ import RecipeCard from '../components/recipe-card.astro';
 import { t } from '../i18n/t';
 import { sanityClient } from '../lib/sanity-client';
 import { RECIPES_LIST_QUERY } from '../lib/groq/recipes';
+import { SITE_CONFIG_QUERY, type SiteConfigRow } from '../lib/groq/site-config';
+import { resolveSiteLogoUrl } from '../lib/site-brand';
 import type { RecipeListItem } from '../types/recipe';
 
 const recipes = await sanityClient.fetch<RecipeListItem[]>(
 	RECIPES_LIST_QUERY,
 );
+
+const siteBase = Astro.site ?? new URL('http://localhost:4321');
+const siteOrigin = siteBase.origin;
+const canonical = new URL('/', siteBase).href;
+const homeDescription = t('home.subtitle');
+
+let siteConfig: SiteConfigRow = null;
+try {
+	siteConfig = await sanityClient.fetch<SiteConfigRow>(SITE_CONFIG_QUERY);
+} catch {
+	siteConfig = null;
+}
+const homeOgImage = resolveSiteLogoUrl(
+	siteOrigin,
+	import.meta.env.PUBLIC_SITE_LOGO_URL,
+	siteConfig?.logo ?? null,
+);
 ---
 
-<Layout title={t('home.pageTitle')}>
+<Layout
+	title={t('home.pageTitle')}
+	description={homeDescription}
+	canonical={canonical}
+	ogType="website"
+	ogImage={homeOgImage}
+>
 	<main class="mx-auto max-w-6xl px-4 pb-12">
 		<h1 class="mb-2 text-[clamp(1.75rem,4vw,2.25rem)] font-semibold leading-tight">
 			{t('home.h1')}

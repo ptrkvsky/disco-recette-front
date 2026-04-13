@@ -3,6 +3,10 @@
 
 interface ImportMetaEnv {
 	readonly PUBLIC_SITE_URL?: string;
+	/** Nom de marque / éditeur pour JSON-LD Organization et meta OG (défaut : titre site i18n). Inscription Google News Publisher Center : décision métier / éligibilité, hors dépôt. */
+	readonly PUBLIC_SITE_NAME?: string;
+	/** URL absolue ou chemin commençant par / vers le logo (Organization + og:image fallback accueil). */
+	readonly PUBLIC_SITE_LOGO_URL?: string;
 	readonly PUBLIC_RECIPE_AUTHOR_NAME?: string;
 	readonly PUBLIC_SANITY_PROJECT_ID?: string;
 	readonly PUBLIC_SANITY_DATASET?: string;

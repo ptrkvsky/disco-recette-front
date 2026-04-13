@@ -5,6 +5,9 @@ const builder = createImageUrlBuilder(sanityClient);
 
 export type RecipeImageSource = SanityImageSource | null | undefined;
 
+/** Largeur minimale usuelle pour JSON-LD / Open Graph (Discover, grandes cartes). */
+export const RECIPE_SHARE_IMAGE_WIDTH = 1200;
+
 /**
  * URL optimisée pour une image recette (hotspot/crop pris en charge par le builder si présents sur la source).
  */

@@ -8,7 +8,12 @@ import {
 	RECIPE_SLUGS_QUERY,
 } from '../../lib/groq/recipes';
 import type { RecipeDetail as RecipeDetailType, RecipeSlugRow } from '../../types/recipe';
-import { urlForRecipeImage } from '../../lib/sanity-image';
+import { SITE_CONFIG_QUERY, type SiteConfigRow } from '../../lib/groq/site-config';
+import {
+	RECIPE_SHARE_IMAGE_WIDTH,
+	urlForRecipeImage,
+} from '../../lib/sanity-image';
+import { resolveSiteLogoUrl, resolveSiteName } from '../../lib/site-brand';
 import { buildRecipeSchemaGraph } from '../../lib/recipe-schema';
 
 export async function getStaticPaths() {
@@ -23,10 +28,10 @@ if (!slug) {
 	return new Response(null, { status: 404, statusText: 'Not Found' });
 }
 
-const recipe = await sanityClient.fetch<RecipeDetailType | null>(
-	RECIPE_BY_SLUG_QUERY,
-	{ slug },
-);
+const [recipe, siteConfig] = await Promise.all([
+	sanityClient.fetch<RecipeDetailType | null>(RECIPE_BY_SLUG_QUERY, { slug }),
+	sanityClient.fetch<SiteConfigRow>(SITE_CONFIG_QUERY).catch((): SiteConfigRow => null),
+]);
 
 if (!recipe) {
 	return new Response(null, { status: 404, statusText: 'Not Found' });
@@ -35,9 +40,13 @@ if (!recipe) {
 const pageTitle = `${recipe.title} | ${t('recipe.pageTitleSuffix')}`;
 const pageDescription = recipe.excerpt ?? undefined;
 
-const canonical = new URL(`/recettes/${slug}`, Astro.site).href;
+const siteBase = Astro.site ?? new URL('http://localhost:4321');
+const canonical = new URL(`/recettes/${slug}`, siteBase).href;
 const imageUrls = [
-	urlForRecipeImage(recipe.mainImage, { width: 1200, height: 800 }),
+	urlForRecipeImage(recipe.mainImage, {
+		width: RECIPE_SHARE_IMAGE_WIDTH,
+		height: 800,
+	}),
 	urlForRecipeImage(recipe.mainImage, { width: 800, height: 533 }),
 ].filter((u): u is string => Boolean(u));
 
@@ -48,12 +57,32 @@ const authorName =
 		? import.meta.env.PUBLIC_RECIPE_AUTHOR_NAME.trim()
 		: '');
 
+const siteOrigin = siteBase.origin;
+const publisherName = resolveSiteName(
+	import.meta.env.PUBLIC_SITE_NAME,
+	siteConfig?.title ?? null,
+	t('layout.defaultTitle'),
+);
+const publisherLogoUrl = resolveSiteLogoUrl(
+	siteOrigin,
+	import.meta.env.PUBLIC_SITE_LOGO_URL,
+	siteConfig?.logo ?? null,
+);
+
 const jsonLd = buildRecipeSchemaGraph({
 	recipe,
 	canonicalUrl: canonical,
 	imageUrls,
 	authorName: authorName || undefined,
+	publisher: {
+		name: publisherName,
+		logoUrl: publisherLogoUrl,
+	},
 });
+
+const primaryOgImage = imageUrls[0];
+const ogImageWidth = primaryOgImage ? RECIPE_SHARE_IMAGE_WIDTH : undefined;
+const ogImageHeight = primaryOgImage ? 800 : undefined;
 ---
 
 <Layout
@@ -61,6 +90,14 @@ const jsonLd = buildRecipeSchemaGraph({
 	description={pageDescription}
 	canonical={canonical}
 	jsonLd={jsonLd}
+	ogType="article"
+	ogTitle={recipe.title}
+	ogImage={primaryOgImage}
+	ogImageWidth={ogImageWidth}
+	ogImageHeight={ogImageHeight}
+	twitterCard="summary_large_image"
+	articlePublishedTime={recipe.publishedAt ?? undefined}
+	articleAuthor={authorName || undefined}
 >
 	<RecipeDetail recipe={recipe} />
 </Layout>

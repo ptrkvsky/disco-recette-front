@@ -1,3 +1,5 @@
+import type { RecipeMainImage } from '../../types/recipe';
+
 /** Thème : hex Sanity (`type: 'color'`) projetés pour override des variables CSS. */
 export type SiteThemeHexes = {
 	page?: string | null;
@@ -14,12 +16,22 @@ export type SiteThemeHexes = {
 	recipeBg?: string | null;
 };
 
-export type SiteConfigThemeRow = {
+export type SiteConfigRow = {
+	title?: string | null;
+	logo?: RecipeMainImage | null;
 	theme: SiteThemeHexes | null;
 } | null;
 
 /** Singleton Studio : documentId fixe `siteConfig`. */
-export const SITE_CONFIG_THEME_QUERY = `*[_id == "siteConfig"][0]{
+export const SITE_CONFIG_QUERY = `*[_id == "siteConfig"][0]{
+  title,
+  logo {
+    _type,
+    alt,
+    asset,
+    hotspot,
+    crop
+  },
   theme {
     "page": page.hex,
     "surface": surface.hex,

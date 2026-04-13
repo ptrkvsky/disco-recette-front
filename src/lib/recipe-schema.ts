@@ -110,17 +110,40 @@ function stripDeep(value: unknown): unknown {
 	return value;
 }
 
+export type RecipePublisherInput = {
+	name: string;
+	/** Logo absolu pour Organization.logo (optionnel) */
+	logoUrl?: string;
+};
+
 export function buildRecipeSchemaGraph(input: {
 	recipe: RecipeDetail;
 	canonicalUrl: string;
 	imageUrls: string[];
 	authorName?: string;
+	publisher: RecipePublisherInput;
 }): RecipeSchemaGraph {
-	const { recipe, canonicalUrl, imageUrls } = input;
+	const { recipe, canonicalUrl, imageUrls, publisher } = input;
 	const authorName = input.authorName?.trim() || t('author.defaultName');
 	const recipeId = `${canonicalUrl}#recipe`;
 	const breadcrumbId = `${canonicalUrl}#breadcrumb`;
 	const origin = new URL(canonicalUrl).origin;
+	const homeUrl = `${origin}/`;
+	const orgId = `${origin}/#organization`;
+
+	const organizationNode: Record<string, unknown> = {
+		'@type': 'Organization',
+		'@id': orgId,
+		name: publisher.name.trim(),
+		url: homeUrl,
+	};
+	const logo = publisher.logoUrl?.trim();
+	if (logo) {
+		organizationNode.logo = {
+			'@type': 'ImageObject',
+			url: logo,
+		};
+	}
 
 	const prepTime = minutesToIsoDuration(recipe.prepTimeMin);
 	const cookTime = minutesToIsoDuration(recipe.cookTimeMin);
@@ -167,6 +190,7 @@ export function buildRecipeSchemaGraph(input: {
 			'@type': 'Person',
 			name: authorName,
 		},
+		publisher: { '@id': orgId },
 		recipeYield:
 			recipe.baseServings === 1
 				? t('schema.recipeYieldSingular')
@@ -218,7 +242,7 @@ export function buildRecipeSchemaGraph(input: {
 		],
 	};
 
-	const graph = [recipeNode, breadcrumb].map(
+	const graph = [organizationNode, recipeNode, breadcrumb].map(
 		(node) => stripDeep(node) as Record<string, unknown>,
 	);
 
